@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0284c7">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
+    <!-- SEO Meta Tags -->
+    <title>Montessori Mafikeng Connect - African Montessori School Platform</title>
+    <meta name="description" content="A culturally-relevant, Montessori-aligned school management platform for African Montessori schools. Built in Africa, for Africa.">
+    <meta name="keywords" content="Montessori, Africa, education, school management, Setswana, offline-first, PWA">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Montessori Mafikeng Connect">
+    <meta property="og:description" content="African Montessori school management platform">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/og-image.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Montessori Mafikeng Connect">
+    <meta name="twitter:description" content="African Montessori school management platform">
+    
+    <!-- Preconnect to APIs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(
+            (registration) => {
+              console.log('ServiceWorker registration successful');
+            },
+            (err) => {
+              console.log('ServiceWorker registration failed: ', err);
+            }
+          );
+        });
+      }
+    </script>
+  </body>
+</html>
