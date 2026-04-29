@@ -178,7 +178,7 @@ export const auditMiddleware = asyncHandler(
       // Log audit trail for sensitive operations
       if (req.user && ['POST', 'PUT', 'DELETE'].includes(req.method)) {
         const auditData = {
-          userId: req.user.id,
+          userId: req.user.userId,
           action: `${req.method} ${req.path}`,
           entityType: req.path.split('/')[2], // Extract entity type from path
           entityId: req.params.id,

@@ -87,7 +87,7 @@ model User {
   firstName           String
   lastName            String
   role                UserRole
-  languagePreference  LanguagePreference  @default(SETSOWANA)
+  languagePreference  LanguagePreference  @default(SETSWANA)
   avatarUrl           String?
   isActive            Boolean             @default(true)
   lastLoginAt         DateTime?
@@ -104,6 +104,7 @@ model User {
   attendanceNotes     Attendance[]        @relation("NotedBy")
   organizedEvents     Event[]             @relation("Organizer")
   volunteerSignups    EventVolunteer[]
+  auditLogs           AuditLog[]
   materialUsage       MaterialUsage[]
   
   @@index([email])
@@ -219,7 +220,7 @@ model Communication {
   expiresAt             DateTime?         // For time-sensitive messages
   
   // Relations
-  sender                User              @relation(fields: [senderId], references: [id])
+  sender                User              @relation("Sender", fields: [senderId], references: [id])
   classroomRecipient    Classroom?        @relation("ClassroomCommunications", fields: [recipientId], references: [id])
   
   @@index([recipientType, recipientId])
@@ -243,7 +244,7 @@ model Attendance {
   
   // Relations
   student       Student           @relation(fields: [studentId], references: [id])
-  notedBy       User?             @relation(fields: [notedById], references: [id])
+  notedBy       User?             @relation("NotedBy", fields: [notedById], references: [id])
   
   @@unique([studentId, date])
   @@index([studentId, date])
@@ -267,7 +268,7 @@ model Event {
   updatedAt         DateTime    @updatedAt
   
   // Relations
-  organizer         User?       @relation(fields: [organizerId], references: [id])
+  organizer         User?       @relation("Organizer", fields: [organizerId], references: [id])
   volunteers        EventVolunteer[]
   
   @@index([startTime])

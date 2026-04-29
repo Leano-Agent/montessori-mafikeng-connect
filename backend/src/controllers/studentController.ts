@@ -242,9 +242,18 @@ export const createStudent = async (req: Request, res: Response) => {
     // Create student
     const student = await prisma.student.create({
       data: {
-        ...validatedData,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
         dateOfBirth: new Date(validatedData.dateOfBirth),
         enrollmentDate: new Date(validatedData.enrollmentDate),
+        gender: validatedData.gender,
+        classroomId: validatedData.classroomId,
+        primaryParentId: validatedData.primaryParentId,
+        secondaryParentId: validatedData.secondaryParentId,
+        emergencyContactName: validatedData.emergencyContactName,
+        emergencyContactPhone: validatedData.emergencyContactPhone,
+        medicalNotes: validatedData.medicalNotes,
+        photoUrl: validatedData.photoUrl,
       },
       include: {
         classroom: {

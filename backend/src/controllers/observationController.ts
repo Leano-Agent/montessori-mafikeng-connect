@@ -71,7 +71,15 @@ export const createObservation = async (req: Request, res: Response) => {
     // Create observation
     const observation = await prisma.montessoriObservation.create({
       data: {
-        ...validatedData,
+        studentId: validatedData.studentId,
+        area: validatedData.area,
+        subArea: validatedData.subArea,
+        observationText: validatedData.observationText,
+        milestoneAchieved: validatedData.milestoneAchieved,
+        milestoneDescription: validatedData.milestoneDescription,
+        workCycleDuration: validatedData.workCycleDuration,
+        concentrationLevel: validatedData.concentrationLevel,
+        materialsUsed: validatedData.materialsUsed || [],
         teacherId,
         photos,
         observationVoiceUrl: observationVoiceUrl ? getFileUrl(observationVoiceUrl) : undefined,
@@ -381,7 +389,7 @@ export const getObservationById = async (req: Request, res: Response) => {
         })
         
         const classroomIds = teacherClassrooms.map(c => c.id)
-        const isStudentInTeacherClassroom = classroomIds.includes(observation.student.classroomId || '')
+        const isStudentInTeacherClassroom = classroomIds.includes(observation.student.classroom?.id || '')
         
         if (!isStudentInTeacherClassroom) {
           throw new AppError('Not authorized to view this observation', 403)
@@ -390,8 +398,8 @@ export const getObservationById = async (req: Request, res: Response) => {
     } else if (userRole === 'PARENT') {
       // Parents can only view observations for their children
       const isParentOfStudent = 
-        observation.student.primaryParentId === userId ||
-        observation.student.secondaryParentId === userId
+        observation.student.primaryParent?.id === userId ||
+        observation.student.secondaryParent?.id === userId
       
       if (!isParentOfStudent) {
         throw new AppError('Not authorized to view this observation', 403)

@@ -70,8 +70,13 @@ export const register = async (req: Request, res: Response) => {
     // Create user
     const user = await prisma.user.create({
       data: {
-        ...validatedData,
+        email: validatedData.email,
+        firstName: validatedData.firstName || '',
+        lastName: validatedData.lastName || '',
         passwordHash,
+        role: validatedData.role || 'PARENT',
+        phone: validatedData.phone || '',
+        languagePreference: validatedData.languagePreference || 'SETSWANA',
       },
       select: {
         id: true,
