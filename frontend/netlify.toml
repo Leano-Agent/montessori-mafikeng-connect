@@ -1,0 +1,292 @@
+[build]
+  # Base directory for the build
+  base = "."
+  
+  # Directory containing the build output
+  publish = "dist"
+  
+  # Build command
+  command = "npm run build"
+  
+  # Functions directory (if using Netlify Functions)
+  functions = "netlify/functions"
+
+[build.environment]
+  # Node.js version
+  NODE_VERSION = "18"
+  
+  # Build environment variables
+  VITE_API_URL = "https://api.montessori-mafikeng.connect/api"
+  VITE_APP_NAME = "Montessori Mafikeng Connect"
+  VITE_APP_VERSION = "1.0.0"
+  VITE_PWA_ENABLED = "true"
+
+[context.production.environment]
+  # Production-specific environment variables
+  VITE_SENTRY_DSN = "@sentry_dsn"
+  VITE_GA_TRACKING_ID = "@ga_tracking_id"
+
+[context.deploy-preview.environment]
+  # Preview-specific environment variables
+  VITE_API_URL = "https://staging-api.montessori-mafikeng.connect/api"
+  VITE_APP_NAME = "Montessori Mafikeng Connect (Preview)"
+
+[context.branch-deploy.environment]
+  # Branch-specific environment variables
+  VITE_API_URL = "https://staging-api.montessori-mafikeng.connect/api"
+
+# Redirects configuration
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers configuration
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    
+    # CORS headers
+    Access-Control-Allow-Origin = "*"
+    
+    # Cache headers
+    Cache-Control = "public, max-age=0, must-revalidate"
+    
+    # PWA headers
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Edge functions (optional)
+# [[edge_functions]]
+#   path = "/api/*"
+#   function = "api-proxy"
+
+# Image optimization
+[images]
+  # Enable Netlify Image CDN
+  remote_images = ["*.montessori-mafikeng.connect"]
+  
+  # Optimize images
+  compress = true
+  
+  # Resize images
+  [images.sizes]
+    small = "640"
+    medium = "768"
+    large = "1024"
+    xlarge = "1280"
+    xxlarge = "1536"
+
+# Split testing (optional)
+# [[split_tests]]
+#   path = "/*"
+#   branches = ["main", "experiment"]
+#   weight = 50
+
+# Environment variables (secrets)
+# These should be set in Netlify UI
+[build.environment]
+  # Backend API URL
+  VITE_API_URL = "@vite_api_url"
+  
+  # Sentry for error tracking
+  VITE_SENTRY_DSN = "@sentry_dsn"
+  
+  # Google Analytics
+  VITE_GA_TRACKING_ID = "@ga_tracking_id"
+  
+  # Feature flags
+  VITE_FEATURE_OFFLINE = "true"
+  VITE_FEATURE_SMS = "true"
+  VITE_FEATURE_SETS_WANA = "true"
+
+# Plugin configuration
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+# Deploy configuration
+[deploy]
+  # Auto-publish
+  publish = "dist"
+  
+  # Functions directory
+  functions = "netlify/functions"
+  
+  # Edge functions directory
+  edge_functions = "netlify/edge-functions"
+
+# Dev configuration
+[dev]
+  # Local development port
+  port = 3000
+  
+  # Framework
+  framework = "vite"
+  
+  # Target port for proxying
+  target = "localhost:3000"
+  
+  # Command to start dev server
+  command = "npm run dev"
+
+# Functions configuration (optional)
+# [functions]
+#   # Node.js version for functions
+#   node_bundler = "esbuild"
+  
+#   # Directory for functions
+#   directory = "netlify/functions"
+  
+#   # External node modules
+#   external_node_modules = ["pg", "redis"]
+
+# Edge functions configuration (optional)
+# [edge_functions]
+#   # Directory for edge functions
+#   directory = "netlify/edge-functions"
+  
+#   # External node modules for edge functions
+#   external_node_modules = []
+
+# Observability
+[observability]
+  # Enable Netlify Analytics
+  enabled = true
+  
+  # Sample rate (0.0 to 1.0)
+  sample_rate = 1.0
+
+# Security
+[security]
+  # Content Security Policy (CSP)
+  [security.headers]
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google-analytics.com https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      img-src 'self' data: https: blob:;
+      font-src 'self' https://fonts.gstatic.com;
+      connect-src 'self' https://api.montessori-mafikeng.connect https://sentry.io;
+      worker-src 'self' blob:;
+      manifest-src 'self';
+    """
+
+# Performance
+[performance]
+  # Enable HTTP/2
+  http2 = true
+  
+  # Enable Brotli compression
+  brotli = true
+  
+  # Enable Gzip compression
+  gzip = true
+  
+  # Minify HTML
+  minify_html = true
+
+# Internationalization (i18n)
+[i18n]
+  # Default language
+  default_language = "tn" # Setswana
+  
+  # Supported languages
+  supported_languages = ["tn", "en"]
+  
+  # URL structure
+  url_structure = "subdirectory" # /tn/, /en/
+
+# Forms (optional)
+# [[forms]]
+#   action = "/submit-form"
+#   method = "POST"
+#   name = "contact-form"
+#   [forms.fields]
+#     name = { required = true }
+#     email = { required = true, type = "email" }
+#     message = { required = true }
+
+# Identity (optional)
+# [identity]
+#   # Enable Netlify Identity
+#   enabled = true
+  
+#   # Registration
+#   registration = "open"
+  
+#   # External providers
+#   external = ["google", "github"]
+
+# Large media (optional)
+# [largeMedia]
+#   enabled = true
+#   filter = "*.mp4|*.mov|*.avi"
+
+# Build hooks (optional)
+# [build_hooks]
+#   # Pre-build hook
+#   pre_build = "npm run lint"
+  
+#   # Post-build hook
+#   post_build = "npm run test:e2e:headless"
+
+# Git LFS (optional)
+# [lfs]
+#   enabled = true
+#   patterns = ["*.psd", "*.ai", "*.pdf"]
+
+# Prerendering (optional)
+# [prerendering]
+#   enable = true
+#   crawl = true
+#   ignore = ["/admin/*", "/api/*"]
+
+# Site information
+[site]
+  name = "Montessori Mafikeng Connect"
+  description = "African Montessori educational platform with Setswana-first design and offline capabilities"
+  url = "https://montessori-mafikeng.connect"
+  locale = "en_ZA"
+  timezone = "Africa/Johannesburg"
+
+# Custom domains (configure in Netlify UI)
+# [[domains]]
+#   domain = "montessori-mafikeng.connect"
+#   https = true
+#   force_https = true
+# 
+# [[domains]]
+#   domain = "www.montessori-mafikeng.connect"
+#   https = true
+#   force_https = true

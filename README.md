@@ -257,6 +257,37 @@ Proprietary - Tyriie Solutions
 
 Tyriie Solutions is committed to building African technology solutions that promote sovereignty, unity, and development across the continent.
 
+## 📚 Documentation
+
+- [API Documentation](./API_DOCUMENTATION.md) - Complete API reference
+- [Frontend Guide](./FRONTEND_GUIDE.md) - Frontend development guide
+- [Database Schema](./DATABASE_SCHEMA.md) - Database design and ER diagrams
+- [Deployment Guide](./DEPLOYMENT.md) - Production deployment instructions
+- [Testing Guide](./TESTING_GUIDE.md) - Testing procedures and guidelines
+- [User Guides](./USER_GUIDE.md) - Administrator, teacher, parent, and student guides
+
+## 🚀 Monday Deployment (March 30, 2026)
+
+This project is scheduled for deployment on Monday, March 30, 2026. All deployment configurations are ready:
+
+### Deployment Platforms Configured:
+- **Frontend**: Vercel (vercel.json configured)
+- **Backend**: Railway.app (railway.json configured)
+- **Alternative**: Render.com (render.yaml configured)
+- **Container**: Docker (Dockerfiles + docker-compose.yml)
+
+### CI/CD Pipeline:
+- GitHub Actions CI pipeline (.github/workflows/ci.yml)
+- Automated testing on push/pull request
+- Docker image building and publishing
+- Security scanning with Trivy
+
+### African Context Optimizations:
+- Setswana language support
+- South African timezone configuration
+- Low-bandwidth optimizations
+- Mobile-first PWA design
+
 ---
 
 **Built with ❤️ in Africa, for Africa**
