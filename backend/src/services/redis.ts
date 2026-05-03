@@ -5,8 +5,14 @@ let redisClient: ReturnType<typeof createClient> | null = null
 
 // Initialize Redis connection
 export const initializeRedis = async () => {
+  const redisUrl = process.env.REDIS_URL
+  
+  if (!redisUrl) {
+    console.log('📭 No REDIS_URL configured, skipping Redis initialization')
+    return null
+  }
+
   try {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
     
     redisClient = createClient({
       url: redisUrl,

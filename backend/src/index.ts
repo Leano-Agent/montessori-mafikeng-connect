@@ -116,9 +116,13 @@ async function startServer() {
     await initializeDatabase()
     console.log('✅ Database connected successfully')
 
-    // Initialize Redis
-    await initializeRedis()
-    console.log('✅ Redis connected successfully')
+    // Initialize Redis (non-blocking — server runs without it)
+    try {
+      await initializeRedis()
+      console.log('✅ Redis connected successfully')
+    } catch (redisError) {
+      console.warn('⚠️ Redis unavailable, continuing without cache:', (redisError as Error).message)
+    }
 
     // Initialize SMS service
     await initializeSMS()
