@@ -61,11 +61,16 @@ app.use(rateLimiter)
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
-    status: 'healthy',
+    status: dbReady ? 'healthy' : 'degraded',
     timestamp: new Date().toISOString(),
     service: 'Montessori Mafikeng Connect API',
     version: '0.1.0',
     environment: process.env.NODE_ENV || 'development',
+    checks: {
+      database: dbReady,
+      redis: redisReady,
+      sms: smsReady,
+    },
   })
 })
 
@@ -109,35 +114,48 @@ app.set('io', io)
 app.use(notFound)
 app.use(errorHandler)
 
+// Track initialization state for health check
+let dbReady = false
+let redisReady = false
+let smsReady = false
+
 // Initialize services and start server
 async function startServer() {
+  // Start HTTP server FIRST so health checks can respond immediately
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`)
+    console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`)
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
+    console.log(`🦁 Montessori Mafikeng Connect - African EdTech Platform`)
+  })
+
+  // Initialize services asynchronously (non-blocking)
+  // Database
   try {
-    // Initialize database connection
     await initializeDatabase()
+    dbReady = true
     console.log('✅ Database connected successfully')
+  } catch (dbError) {
+    console.error('❌ Database connection failed:', (dbError as Error).message)
+    console.log('⚠️ Server running without database — some features unavailable')
+  }
 
-    // Initialize Redis (non-blocking — server runs without it)
-    try {
-      await initializeRedis()
-      console.log('✅ Redis connected successfully')
-    } catch (redisError) {
-      console.warn('⚠️ Redis unavailable, continuing without cache:', (redisError as Error).message)
-    }
+  // Redis (non-blocking)
+  try {
+    await initializeRedis()
+    redisReady = true
+    console.log('✅ Redis connected successfully')
+  } catch (redisError) {
+    console.warn('⚠️ Redis unavailable, continuing without cache:', (redisError as Error).message)
+  }
 
-    // Initialize SMS service
+  // SMS service
+  try {
     await initializeSMS()
+    smsReady = true
     console.log('✅ SMS service initialized')
-
-    // Start server
-    httpServer.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`)
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`)
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
-      console.log(`🦁 Montessori Mafikeng Connect - African EdTech Platform`)
-    })
-  } catch (error) {
-    console.error('Failed to start server:', error)
-    process.exit(1)
+  } catch (smsError) {
+    console.warn('⚠️ SMS service unavailable:', (smsError as Error).message)
   }
 }
 
