@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd .. && npm install && npx prisma generate && npx tsc",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
+  ],
+  "functions": {
+    "api/index.ts": {
+      "memory": 256,
+      "maxDuration": 30
+    }
+  }
+}
