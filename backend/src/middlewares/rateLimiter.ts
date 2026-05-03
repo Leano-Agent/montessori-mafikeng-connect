@@ -31,15 +31,11 @@ export const strictRateLimiter = rateLimit({
 // Login rate limiter to prevent brute force attacks
 export const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 login attempts per windowMs
+  max: 10, // Limit each IP to 10 login attempts per windowMs
   message: 'Too many login attempts, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: false,
-  skip: (req: Request) => {
-    // Skip rate limiting for successful logins
-    return req.body?.email && req.body?.password && req.method === 'POST'
-  },
+  skipSuccessfulRequests: true, // successful logins don't count toward the limit
   handler: (req: Request, res: Response) => {
     throw new AppError('Too many login attempts, please try again later.', 429)
   },

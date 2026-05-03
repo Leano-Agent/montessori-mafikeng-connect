@@ -1,4 +1,4 @@
-import express from 'express'
+import express from 'express';
 import {
   register,
   login,
@@ -7,21 +7,36 @@ import {
   forgotPassword,
   resetPassword,
   getCurrentUser,
-} from '../controllers/authController'
-import { authenticate } from '../middlewares/authMiddleware'
-import { asyncHandler } from '../middlewares/errorMiddleware'
+} from '../controllers/authController';
+import { authenticate } from '../middlewares/authMiddleware';
+import { asyncHandler } from '../middlewares/errorMiddleware';
+import { loginRateLimiter, strictRateLimiter } from '../middlewares/rateLimiter';
 
-const router = express.Router()
+const router = express.Router();
 
-// Public routes
-router.post('/register', asyncHandler(register))
-router.post('/login', asyncHandler(login))
-router.post('/refresh-token', asyncHandler(refreshToken))
-router.post('/forgot-password', asyncHandler(forgotPassword))
-router.post('/reset-password', asyncHandler(resetPassword))
+// ── Public routes ──────────────────────────────────────────────────
 
-// Protected routes
-router.post('/logout', authenticate, asyncHandler(logout))
-router.get('/me', authenticate, asyncHandler(getCurrentUser))
+// Registration: strict rate limit to prevent abuse
+router.post('/register', strictRateLimiter, asyncHandler(register));
 
-export default router
+// Login: dedicated brute-force rate limiter (5 attempts / 15 min)
+router.post('/login', loginRateLimiter, asyncHandler(login));
+
+// Token refresh
+router.post('/refresh-token', asyncHandler(refreshToken));
+
+// Forgot password: strict rate limit to prevent enumeration/spam
+router.post('/forgot-password', strictRateLimiter, asyncHandler(forgotPassword));
+
+// Reset password: strict rate limit
+router.post('/reset-password', strictRateLimiter, asyncHandler(resetPassword));
+
+// ── Protected routes ───────────────────────────────────────────────
+
+// Logout (requires auth so we know which tokens to invalidate)
+router.post('/logout', authenticate, asyncHandler(logout));
+
+// Current user profile
+router.get('/me', authenticate, asyncHandler(getCurrentUser));
+
+export default router;
