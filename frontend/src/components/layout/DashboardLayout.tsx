@@ -38,6 +38,7 @@ import {
 import LanguageSwitcher from '../LanguageSwitcher'
 import OfflineIndicator from '../OfflineIndicator'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../stores/authStore'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -67,9 +68,8 @@ const DashboardLayout = ({ children, title, userRole, userName, userEmail }: Das
     principal: t('auth.principal'),
   }
 
-  const handleLogout = () => {
-    // In a real app, this would clear tokens and call logout API
-    localStorage.removeItem('authToken')
+  const handleLogout = async () => {
+    await useAuthStore.getState().logout()
     navigate('/login')
   }
 

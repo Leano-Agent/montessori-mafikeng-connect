@@ -1,197 +1,158 @@
+/**
+ * Login Page — Montessori Mafikeng Connect
+ *
+ * Authenticates against the backend API. On success the auth store
+ * holds the user profile and tokens in memory; role is persisted
+ * to localStorage for route guards.
+ */
+
+import { useState, useEffect } from 'react'
 import {
   Box,
   Button,
-  Container,
   FormControl,
-  FormErrorMessage,
   FormLabel,
-  Heading,
   Input,
+  Heading,
+  Text,
+  Alert,
+  AlertIcon,
   InputGroup,
   InputRightElement,
-  Link,
-  Stack,
-  Text,
-  VStack,
-  Checkbox,
-  useToast,
+  IconButton,
+  useColorModeValue,
 } from '@chakra-ui/react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
+import { useAuthStore } from '../stores/authStore'
 
-interface LoginFormData {
-  email: string
-  password: string
-  rememberMe: boolean
-}
-
-const Login = () => {
+export default function Login() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const toast = useToast()
+  const { login, isLoading, error, clearError } = useAuthStore()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>()
+  // ── Clear stale error on input change ──────────────────────────
+  useEffect(() => {
+    clearError()
+  }, [email, password]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
+  // ── Submit handler ─────────────────────────────────────────────
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!email.trim() || !password.trim()) {
+      return
+    }
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      toast({
-        title: t('auth.loginSuccess'),
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      })
-      
-      // Navigate to dashboard based on role (in real app, this would come from API response)
-      navigate('/dashboard')
-    } catch (error) {
-      toast({
-        title: 'Login failed',
-        description: 'Please check your credentials and try again',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      })
-    } finally {
-      setIsLoading(false)
+      await login({ email: email.trim(), password })
+    } catch {
+      // error is already set in the store by the login action
     }
   }
 
+  // ── Theme values ───────────────────────────────────────────────
+  const bgColor = useColorModeValue('white', 'gray.800')
+  const borderColor = useColorModeValue('gray.200', 'gray.700')
+
+  // ── Render ─────────────────────────────────────────────────────
   return (
-    <Box minH="100vh" bg="gray.50" display="flex" alignItems="center" justifyContent="center">
-      <Container maxW="md" py={12}>
-        <VStack spacing={8} align="stretch">
-          {/* Header */}
-          <Box textAlign="center">
-            <Heading size="xl" color="brand.600" mb={2}>
-              🦁 Montessori Mafikeng Connect
-            </Heading>
-            <Text color="gray.600">{t('welcome.subtitle')}</Text>
-          </Box>
+    <Box
+      minH="100vh"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      bg={useColorModeValue('gray.50', 'gray.900')}
+      px={4}
+    >
+      <Box
+        w="full"
+        maxW="md"
+        bg={bgColor}
+        borderRadius="xl"
+        boxShadow="lg"
+        border="1px"
+        borderColor={borderColor}
+        p={8}
+      >
+        {/* ─── Header ─── */}
+        <Heading
+          size="lg"
+          textAlign="center"
+          mb={2}
+          color="brand.600"
+        >
+          Montessori Mafikeng
+        </Heading>
+        <Text textAlign="center" color="gray.500" mb={6} fontSize="sm">
+          {t('login.welcome', 'Sign in to your account')}
+        </Text>
 
-          {/* Login Card */}
-          <Box bg="white" p={8} borderRadius="xl" boxShadow="lg">
-            <VStack spacing={6} align="stretch">
-              <Box>
-                <Heading size="lg" mb={2}>
-                  {t('auth.login')}
-                </Heading>
-                <Text color="gray.600">
-                  {t('auth.noAccount')}{' '}
-                  <Link as={RouterLink} to="/register" color="brand.600" fontWeight="semibold">
-                    {t('auth.signUp')}
-                  </Link>
-                </Text>
-              </Box>
+        {/* ─── Error ─── */}
+        {error && (
+          <Alert status="error" borderRadius="md" mb={4} fontSize="sm">
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
 
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <VStack spacing={4}>
-                  {/* Email */}
-                  <FormControl isInvalid={!!errors.email}>
-                    <FormLabel htmlFor="email">{t('auth.email')}</FormLabel>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="example@email.com"
-                      {...register('email', {
-                        required: t('errors.required'),
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: t('errors.invalidEmail'),
-                        },
-                      })}
-                    />
-                    <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-                  </FormControl>
+        {/* ─── Form ─── */}
+        <form onSubmit={handleSubmit}>
+          <FormControl isRequired mb={4}>
+            <FormLabel>{t('login.email', 'Email')}</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('login.emailPlaceholder', 'you@school.co.za')}
+              autoComplete="email"
+              autoFocus
+              size="lg"
+            />
+          </FormControl>
 
-                  {/* Password */}
-                  <FormControl isInvalid={!!errors.password}>
-                    <FormLabel htmlFor="password">{t('auth.password')}</FormLabel>
-                    <InputGroup>
-                      <Input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        {...register('password', {
-                          required: t('errors.required'),
-                          minLength: {
-                            value: 6,
-                            message: t('errors.minLength', { count: 6 }),
-                          },
-                        })}
-                      />
-                      <InputRightElement>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        >
-                          {showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                    <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-                  </FormControl>
+          <FormControl isRequired mb={6}>
+            <FormLabel>{t('login.password', 'Password')}</FormLabel>
+            <InputGroup>
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('login.passwordPlaceholder', 'Enter your password')}
+                autoComplete="current-password"
+                size="lg"
+              />
+              <InputRightElement h="full">
+                <IconButton
+                  variant="ghost"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  icon={showPassword ? <span>🙈</span> : <span>👁</span>}
+                  onClick={() => setShowPassword(!showPassword)}
+                  size="sm"
+                />
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
 
-                  {/* Remember me & Forgot password */}
-                  <Stack direction={{ base: 'column', sm: 'row' }} justify="space-between" width="100%">
-                    <Checkbox {...register('rememberMe')} colorScheme="brand">
-                      {t('auth.rememberMe')}
-                    </Checkbox>
-                    <Link as={RouterLink} to="/forgot-password" color="brand.600" fontSize="sm">
-                      {t('auth.forgotPassword')}
-                    </Link>
-                  </Stack>
+          <Button
+            type="submit"
+            colorScheme="brand"
+            w="full"
+            size="lg"
+            isLoading={isLoading}
+            loadingText={t('login.loading', 'Signing in…')}
+          >
+            {t('login.submit', 'Sign In')}
+          </Button>
+        </form>
 
-                  {/* Submit button */}
-                  <Button
-                    type="submit"
-                    colorScheme="brand"
-                    size="lg"
-                    width="100%"
-                    isLoading={isLoading}
-                    loadingText={t('auth.login')}
-                  >
-                    {t('auth.login')}
-                  </Button>
-                </VStack>
-              </form>
-
-              {/* Language switcher note */}
-              <Box textAlign="center" pt={4} borderTopWidth="1px" borderTopColor="gray.200">
-                <Text fontSize="sm" color="gray.600">
-                  {t('language.switch')}: 🇿🇦 Setswana / 🇬🇧 English
-                </Text>
-              </Box>
-            </VStack>
-          </Box>
-
-          {/* African Sovereignty Message */}
-          <Box bg="brand.50" p={6} borderRadius="xl" borderWidth="1px" borderColor="brand.200">
-            <VStack spacing={3} align="center" textAlign="center">
-              <Heading size="md" color="brand.700">
-                🦁 {t('africanSovereignty.title')}
-              </Heading>
-              <Text fontSize="sm">{t('africanSovereignty.message')}</Text>
-            </VStack>
-          </Box>
-        </VStack>
-      </Container>
+        {/* ─── Footer ─── */}
+        <Text textAlign="center" mt={6} fontSize="xs" color="gray.400">
+          Montessori Mafikeng Connect &copy; {new Date().getFullYear()}
+        </Text>
+      </Box>
     </Box>
   )
 }
-
-export default Login

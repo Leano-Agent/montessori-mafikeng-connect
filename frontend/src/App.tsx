@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import OfflineIndicator from './components/OfflineIndicator'
 import LanguageSwitcher from './components/LanguageSwitcher'
+import { useAuthStore } from './stores/authStore'
 
 // Import pages
 import Login from './pages/Login'
@@ -296,6 +297,12 @@ function HomePage() {
 }
 
 function App() {
+  const { initialize } = useAuthStore()
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
+
   return (
     <Router>
       <Routes>

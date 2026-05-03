@@ -1,6 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 
+// Determine if we're using Supabase PgBouncer pooler
+const isPooler = process.env.DATABASE_URL?.includes('pgbouncer=true') ?? false
+
 // Prisma client instance
+// When using Supabase pooler (PgBouncer):
+//   - pgbouncer=true in the connection URL disables Prisma prepared statements
+//   - connection_limit=1 is set in the URL to prevent connection storms
+//   - Datasource URL is explicit to ensure the pooler param is picked up
 const prisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   errorFormat: 'pretty',

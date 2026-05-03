@@ -1,17 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-
-// Custom error class for application errors
-export class AppError extends Error {
-  statusCode: number
-  isOperational: boolean
-
-  constructor(message: string, statusCode: number) {
-    super(message)
-    this.statusCode = statusCode
-    this.isOperational = true
-    Error.captureStackTrace(this, this.constructor)
-  }
-}
+import { AppError } from '../utils/AppError'
 
 // Not found middleware
 export const notFound = (req: Request, res: Response, next: NextFunction) => {
@@ -24,57 +12,51 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  let error = { ...err }
-  error.message = err.message
-
-  // Log error for development
-  if (process.env.NODE_ENV === 'development') {
-    console.error('Error:', {
-      message: err.message,
-      stack: err.stack,
-      path: req.path,
-      method: req.method,
-      body: req.body,
-      params: req.params,
-      query: req.query,
-    })
-  }
+  let statusCode = (err as AppError).statusCode || 500
+  let message = err.message || 'Server Error'
 
   // Handle specific error types
   if (err.name === 'CastError') {
-    const message = 'Resource not found'
-    error = new AppError(message, 404)
+    message = 'Resource not found'
+    statusCode = 404
   }
 
   if (err.name === 'ValidationError') {
-    const message = Object.values((err as any).errors)
+    message = Object.values((err as any).errors)
       .map((val: any) => val.message)
       .join(', ')
-    error = new AppError(message, 400)
+    statusCode = 400
   }
 
   if ((err as any).code === 11000) {
-    const message = 'Duplicate field value entered'
-    error = new AppError(message, 400)
+    message = 'Duplicate field value entered'
+    statusCode = 400
   }
 
   if (err.name === 'JsonWebTokenError') {
-    const message = 'Invalid token'
-    error = new AppError(message, 401)
+    message = 'Invalid token'
+    statusCode = 401
   }
 
   if (err.name === 'TokenExpiredError') {
-    const message = 'Token expired'
-    error = new AppError(message, 401)
+    message = 'Token expired'
+    statusCode = 401
   }
 
-  // Default to 500 if no status code
-  const statusCode = (error as AppError).statusCode || 500
-  const message = error.message || 'Server Error'
+  // Log for development
+  if (process.env.NODE_ENV !== 'production') {
+    console.error('Error:', {
+      message: err.message,
+      statusCode,
+      path: req.path,
+      method: req.method,
+      body: req.body,
+      stack: err.stack,
+    })
+  }
 
-  // Send error response
   res.status(statusCode).json({
     success: false,
     error: {
@@ -82,10 +64,13 @@ export const errorHandler = (
       statusCode,
       timestamp: new Date().toISOString(),
       path: req.path,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+      ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
     },
   })
 }
+
+// Re-export AppError so middleware/rate-limiter imports still work
+export { AppError }
 
 // Async error handler wrapper
 export const asyncHandler = (fn: Function) => {

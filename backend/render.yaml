@@ -12,11 +12,19 @@ services:
         value: 3001
       - key: DATABASE_URL
         sync: false
+        # Supabase pooler (PgBouncer) connection:
+        # postgresql://user.abc123:[PASSWORD]@aws-0-af-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1
+      - key: DIRECT_URL
+        sync: false
+        # Direct connection for Prisma migrations (port 5432, bypasses PgBouncer):
+        # postgresql://user.abc123:[PASSWORD]@aws-0-af-south-1.pooler.supabase.com:5432/postgres
       - key: REDIS_URL
         sync: false
-      - key: JWT_SECRET
+      - key: JWT_ACCESS_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_RESET_SECRET
         sync: false
       - key: AWS_ACCESS_KEY_ID
         sync: false
