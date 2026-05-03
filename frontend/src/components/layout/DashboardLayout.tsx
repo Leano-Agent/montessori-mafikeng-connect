@@ -32,8 +32,8 @@ import {
   MoonIcon,
   BellIcon,
   SettingsIcon,
-  LogoutIcon,
-  UserIcon,
+  UnlockIcon,
+  AtSignIcon,
 } from '@chakra-ui/icons'
 import LanguageSwitcher from '../LanguageSwitcher'
 import OfflineIndicator from '../OfflineIndicator'
@@ -194,14 +194,14 @@ const DashboardLayout = ({ children, title, userRole, userName, userEmail }: Das
                 </HStack>
               </MenuButton>
               <MenuList>
-                <MenuItem icon={<UserIcon />} as={Link} to="/profile">
+                <MenuItem icon={<AtSignIcon />} as={Link} to="/profile">
                   {t('auth.profile')}
                 </MenuItem>
                 <MenuItem icon={<SettingsIcon />} as={Link} to="/settings">
                   Settings
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem icon={<LogoutIcon />} onClick={handleLogout} color="red.500">
+                <MenuItem icon={<UnlockIcon />} onClick={handleLogout} color="red.500">
                   {t('auth.logout')}
                 </MenuItem>
               </MenuList>

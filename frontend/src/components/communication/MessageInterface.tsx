@@ -32,14 +32,13 @@ import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { 
   AttachmentIcon, 
-  MicIcon, 
-  SendIcon, 
+  EmailIcon, 
   CheckIcon,
   PhoneIcon,
-  MoreVerticalIcon,
   DownloadIcon,
   DeleteIcon,
   StarIcon,
+  HamburgerIcon,
 } from '@chakra-ui/icons'
 
 interface Message {
@@ -265,7 +264,7 @@ const MessageInterface = () => {
                     <MenuButton
                       as={IconButton}
                       aria-label="Options"
-                      icon={<MoreVerticalIcon />}
+                      icon={<HamburgerIcon />}
                       variant="ghost"
                     />
                     <MenuList>
@@ -303,7 +302,7 @@ const MessageInterface = () => {
                         >
                           {message.type === 'voice' ? (
                             <HStack spacing={3}>
-                              <MicIcon />
+                              <PhoneIcon />
                               <Box>
                                 <Text>Voice message</Text>
                                 <Text fontSize="xs" opacity={0.8}>
@@ -389,7 +388,7 @@ const MessageInterface = () => {
                   />
                   <IconButton
                     aria-label="Record voice message"
-                    icon={<MicIcon />}
+                    icon={<PhoneIcon />}
                     variant="ghost"
                     colorScheme={isRecording ? 'red' : 'blue'}
                     onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
@@ -404,7 +403,7 @@ const MessageInterface = () => {
                   />
                   <IconButton
                     aria-label="Send message"
-                    icon={<SendIcon />}
+                    icon={<EmailIcon />}
                     colorScheme="brand"
                     onClick={sendMessage}
                     isDisabled={!newMessage.trim()}

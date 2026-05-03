@@ -34,7 +34,7 @@ import {
 } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
-import { DownloadIcon, RefreshIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons'
+import { DownloadIcon, RepeatIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons'
 
 const MissionControl = () => {
   const { t } = useTranslation()
@@ -162,7 +162,7 @@ const MissionControl = () => {
               
               <HStack spacing={4}>
                 <Button
-                  leftIcon={<RefreshIcon />}
+                  leftIcon={<RepeatIcon />}
                   variant="outline"
                   onClick={handleRefresh}
                 >

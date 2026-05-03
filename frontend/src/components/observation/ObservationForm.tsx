@@ -27,7 +27,7 @@ import {
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { AddIcon, CloseIcon, MicIcon, UploadIcon } from '@chakra-ui/icons'
+import { AddIcon, CloseIcon, PhoneIcon, AttachmentIcon } from '@chakra-ui/icons'
 
 interface ObservationFormData {
   studentId: string
@@ -241,7 +241,7 @@ const ObservationForm = () => {
                       </Text>
                     </Box>
                     <Button
-                      leftIcon={<MicIcon />}
+                      leftIcon={<PhoneIcon />}
                       colorScheme={isRecording ? 'red' : 'blue'}
                       onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
                       size="sm"
@@ -266,7 +266,7 @@ const ObservationForm = () => {
                 <Box p={4} borderWidth="1px" borderColor="gray.200" borderRadius="lg">
                   <VStack spacing={4}>
                     <Button
-                      leftIcon={<UploadIcon />}
+                      leftIcon={<AttachmentIcon />}
                       as="label"
                       cursor="pointer"
                       width="100%"

@@ -34,14 +34,13 @@ import {
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { 
-  SyncIcon, 
+  RepeatIcon, 
   CheckIcon, 
   WarningIcon, 
   DownloadIcon,
-  UploadIcon,
+  AttachmentIcon,
   ViewIcon,
   CloseIcon,
-  RepeatIcon,
 } from '@chakra-ui/icons'
 
 interface SyncItem {
@@ -293,7 +292,7 @@ const SyncManager = () => {
           {/* Sync Controls */}
           <HStack spacing={4}>
             <Button
-              leftIcon={<SyncIcon />}
+              leftIcon={<RepeatIcon />}
               colorScheme="brand"
               onClick={handleSyncAll}
               isLoading={isSyncing}
@@ -319,7 +318,7 @@ const SyncManager = () => {
             </Button>
             
             <Button
-              leftIcon={<UploadIcon />}
+              leftIcon={<AttachmentIcon />}
               variant="outline"
               onClick={() => {
                 toast({
