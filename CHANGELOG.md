@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-05-03)
+- **Backend test suite**: 89 tests across 4 suites (auth, errorMiddleware, sms, redis)
+- **Redis service test** (37 tests): lifecycle, graceful fallbacks, error recovery
+- **Error middleware test** (16 tests): AppError class, errorHandler, notFound, asyncHandler
+- **SMS service test** (11 tests): sendSMS, validation, phone formatting, message construction
+- **Frontend auth API layer**: axios instance with JWT refresh interceptor
+- **Auth store** (Zustand): secure in-memory token storage, localStorage for role
+- **Login page**: wired to real backend API (replaces simulated API)
+- Vite dev proxy configured for /api → backend:3001
+
+### Changed
+- **Auth controller test**: fixed mock export name (AuthService vs authService) — 25 tests pass
+- **Jest config**: suppressed ts-jest TS151002 warning
+- **DashboardLayout**: logout now calls real auth API (was localStorage-only stub)
+- **App.tsx**: initializes auth store on mount for session restore
+
+### Fixed
+- Redis optional availability: all services degrade gracefully without Redis
+- TypeScript compilation: zero errors across both frontend and backend
+
+## [0.1.0] — Phase 2
+
 ### Added
 - Initial project structure and architecture
 - Phase 2 frontend implementation (88% complete)
