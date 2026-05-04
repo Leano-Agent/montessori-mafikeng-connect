@@ -20,6 +20,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
+import { forgotPassword } from '../services/auth'
 
 interface ForgotPasswordFormData {
   email: string
@@ -40,8 +41,7 @@ const ForgotPassword = () => {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await forgotPassword(data.email)
       
       setResetSent(true)
       
@@ -52,10 +52,10 @@ const ForgotPassword = () => {
         duration: 5000,
         isClosable: true,
       })
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Failed to send reset instructions',
-        description: 'Please try again or contact support',
+        description: error?.response?.data?.message || 'Please try again or contact support',
         status: 'error',
         duration: 5000,
         isClosable: true,

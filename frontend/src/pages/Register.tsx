@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
+import { useAuthStore } from '../stores/authStore'
 
 interface RegisterFormData {
   firstName: string
@@ -40,6 +41,9 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  const registerUser = useAuthStore(state => state.register)
+  const authError = useAuthStore(state => state.error)
+
   const {
     register,
     handleSubmit,
@@ -52,23 +56,32 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await registerUser({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        role: data.role.toUpperCase() as 'TEACHER' | 'PARENT',
+      })
       
       toast({
         title: t('auth.registerSuccess'),
-        description: `Welcome ${data.firstName}! Your account has been created as a ${data.role}.`,
+        description: `Welcome ${data.firstName}! Your account has been created.`,
         status: 'success',
         duration: 5000,
         isClosable: true,
       })
       
-      // Navigate to login page
-      navigate('/login')
-    } catch (error) {
+      navigate('/dashboard')
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        authError ||
+        'Registration failed. Please try again or contact support.'
       toast({
         title: 'Registration failed',
-        description: 'Please try again or contact support if the problem persists',
+        description: message,
         status: 'error',
         duration: 5000,
         isClosable: true,

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-05-04)
+- **Register page**: wired to real backend API via auth store (replaces simulated API)
+- **ForgotPassword page**: wired to real backend forgotPassword service
+- **vite-env.d.ts**: Vite type declarations (fixes `import.meta.env` TypeScript error)
+
+### Changed
+- **Register.tsx**: uses `useAuthStore.register()` instead of mock timeout, navigates to dashboard on success
+- **ForgotPassword.tsx**: calls real `forgotPassword()` API service instead of mock timeout
+- **render.yaml**: updated for Supabase external DB (removed native Render DB provision, fixed build/start commands)
+
+### Fixed
+- **TypeScript compilation**: frontend now builds with zero errors (was error on `import.meta.env`)
+- Frontend production build verified: Vite builds successfully
+- All 89 backend tests verified passing
+
 ### Added (2026-05-03)
 - **Backend test suite**: 89 tests across 4 suites (auth, errorMiddleware, sms, redis)
 - **Redis service test** (37 tests): lifecycle, graceful fallbacks, error recovery
