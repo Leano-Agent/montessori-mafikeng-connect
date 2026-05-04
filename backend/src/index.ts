@@ -68,6 +68,7 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     checks: {
       database: dbReady,
+      dbError: dbReady ? null : dbError || 'Unknown connection error',
       redis: redisReady,
       sms: smsReady,
     },
@@ -116,6 +117,7 @@ app.use(errorHandler)
 
 // Track initialization state for health check
 let dbReady = false
+let dbError = ''
 let redisReady = false
 let smsReady = false
 
@@ -135,8 +137,10 @@ async function startServer() {
     await initializeDatabase()
     dbReady = true
     console.log('✅ Database connected successfully')
-  } catch (dbError) {
-    console.error('❌ Database connection failed:', (dbError as Error).message)
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    dbError = msg
+    console.error('❌ Database connection failed:', msg)
     console.log('⚠️ Server running without database — some features unavailable')
   }
 
